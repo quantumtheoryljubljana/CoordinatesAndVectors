@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interaktivni prikaz kartezičnih, sferičnih in cilindričnih koordinat, enotskih vektorjev ter hitrosti.">
+  <title>Koordinatni sistemi in enotski vektorji</title>
+  <link rel="stylesheet" href="coordinates.css">
+  <script src="coordinates.js" defer></script>
+</head>
+<body>
+<main class="app">
+  <header class="app-header">
+    <div>
+      <h1 data-i18n="title">Koordinatni sistemi in enotski vektorji</h1>
+      <p class="intro" data-i18n="intro">Krajevni vektor in hitrost v treh koordinatnih sistemih.</p>
+    </div>
+    <div class="language-group" role="group" aria-label="Language / Jezik">
+      <button type="button" class="preset-btn active" data-language="sl" aria-pressed="true">SL</button>
+      <button type="button" class="preset-btn" data-language="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <section class="plots-grid" aria-label="Coordinate systems">
+    <article class="panel">
+      <div class="panel-heading"><h2 data-i18n="cartesian">Kartezične koordinate</h2><span class="math">(x, y, z)</span></div>
+      <svg id="cartesianScene" class="scene" viewBox="0 0 640 470" tabindex="0" role="img" aria-describedby="viewHelp"></svg>
+      <div class="coordinate-readout" id="cartesianReadout"></div>
+      <div class="velocity-readout" id="cartesianVelocity"></div>
+      <div class="basis-table" id="cartesianBasis"></div>
+      <p class="basis-note" data-i18n="fixedBasis">Smeri enotskih vektorjev so povsod enake.</p>
+    </article>
+    <article class="panel">
+      <div class="panel-heading"><h2 data-i18n="spherical">Sferične koordinate</h2><span class="math">(r, θ, φ)</span></div>
+      <svg id="sphericalScene" class="scene" viewBox="0 0 640 470" tabindex="0" role="img" aria-describedby="viewHelp"></svg>
+      <div class="coordinate-readout" id="sphericalReadout"></div>
+      <div class="velocity-readout" id="sphericalVelocity"></div>
+      <div class="basis-table" id="sphericalBasis"></div>
+      <p class="basis-note" data-i18n="sphericalBasisNote">Smeri enotskih vektorjev so odvisne od θ in φ.</p>
+    </article>
+    <article class="panel">
+      <div class="panel-heading"><h2 data-i18n="cylindrical">Cilindrične koordinate</h2><span class="math">(ρ, φ, z)</span></div>
+      <svg id="cylindricalScene" class="scene" viewBox="0 0 640 470" tabindex="0" role="img" aria-describedby="viewHelp"></svg>
+      <div class="coordinate-readout" id="cylindricalReadout"></div>
+      <div class="velocity-readout" id="cylindricalVelocity"></div>
+      <div class="basis-table" id="cylindricalBasis"></div>
+      <p class="basis-note" data-i18n="cylindricalBasisNote">Smeri êρ in êφ so odvisne od φ; êz je nespremenljiv.</p>
+    </article>
+  </section>
+
+  <section class="controls-panel" aria-label="Display controls">
+    <div class="control-line">
+      <span class="group-label" data-i18n="display">Prikaz:</span>
+      <label class="check-label"><input id="showVelocity" type="checkbox" checked><span data-i18n="velocity">Hitrost</span></label>
+      <label class="check-label"><input id="showBasis" type="checkbox" checked><span data-i18n="unitVectors">Enotski vektorji</span></label>
+      <label class="check-label"><input id="showGuides" type="checkbox" checked><span data-i18n="guides">Pomožne črte</span></label>
+      <label class="check-label"><input id="showAngles" type="checkbox" checked><span data-i18n="angles">Koti</span></label>
+      <label class="check-label"><input id="showGrid" type="checkbox"><span data-i18n="grid">Mreža xy</span></label>
+      <label class="check-label"><input id="showValues" type="checkbox" checked><span data-i18n="basisValues">Komponente baze</span></label>
+    </div>
+    <div class="control-line">
+      <span class="group-label" data-i18n="view">Pogled:</span>
+      <div class="button-group" role="group" aria-label="View">
+        <button type="button" class="preset-btn active" data-view="3d" aria-pressed="true">3D</button>
+        <button type="button" class="preset-btn" data-view="xy" aria-pressed="false">xy</button>
+        <button type="button" class="preset-btn" data-view="xz" aria-pressed="false">xz</button>
+        <button type="button" class="preset-btn" data-view="yz" aria-pressed="false">yz</button>
+      </div>
+      <label class="zoom-control"><span data-i18n="zoom">Povečava</span><input type="range" id="zoom" min="0.6" max="1.8" value="1" step="0.05"><output id="zoomValue">100%</output></label>
+      <div class="angle-unit-control"><span data-i18n="angleUnit">Koti:</span><button type="button" class="preset-btn active" data-angle-unit="deg" aria-pressed="true">°</button><button type="button" class="preset-btn" data-angle-unit="rad" aria-pressed="false">rad</button></div>
+    </div>
+    <p id="viewHelp" class="help" data-i18n="viewHelp">Povlecite sliko za vrtenje vseh treh pogledov; kolešček spremeni povečavo. Tipkovnica: puščice, +/−, Home. Pomožne črte in koti pripadajo izbranemu vektorju.</p>
+  </section>
+
+  <section class="vectors-panel" aria-labelledby="vectorsTitle">
+    <div class="section-heading">
+      <h2 id="vectorsTitle" data-i18n="vectors">Vektorji</h2>
+      <button type="button" class="action-btn add-btn" id="addVector" data-i18n="addVector">+ Dodaj vektor</button>
+    </div>
+    <div id="vectorRows"></div>
+    <p class="help velocity-help" data-i18n="velocityHelp">Oranžne puščice prikazujejo hitrost v točki telesa; merilo puščic je 1 s. Komponente hitrosti lahko spreminjate, ko je animacija ustavljena. Med animacijo hitrost sledi gibanju.</p>
+    <div class="control-line presets-line">
+      <span class="group-label" data-i18n="examples">Primeri:</span>
+      <button type="button" class="preset-btn" data-preset="general" data-i18n="general">Splošni vektor</button>
+      <button type="button" class="preset-btn" data-preset="plane" data-i18n="xyPlane">Ravnina xy</button>
+      <button type="button" class="preset-btn" data-preset="axis" data-i18n="zAxis">Os z</button>
+      <button type="button" class="preset-btn" data-preset="compare" data-i18n="compare">Tri različne smeri</button>
+    </div>
+    <div class="control-line motion-line">
+      <span class="group-label" data-i18n="motion">Gibanje:</span>
+      <button type="button" id="play" class="action-btn" aria-pressed="false" data-i18n="play">Zaženi</button>
+      <label><span data-i18n="animateLabel">Izbrani vektor</span> <select id="motion"><option value="azimuth" data-i18n="azimuthMotion">Vrtenje okoli osi z (φ)</option><option value="polar" data-i18n="polarMotion">Vrtenje čez pola (θ)</option></select></label>
+      <label class="speed-control"><span data-i18n="speed">Kotna hitrost</span><input id="speed" type="range" min="5" max="60" step="5" value="20"><output id="speedValue">20 °/s</output></label>
+      <button type="button" id="reset" class="action-btn" data-i18n="reset">Ponastavi</button>
+    </div>
+    <p id="status" class="status-row" role="status" aria-live="polite"></p>
+  </section>
+
+  <footer class="qt-footer"><a href="https://quantum-theory.fmf.uni-lj.si/" target="_blank" rel="noopener noreferrer">quantum-theory.fmf.uni-lj.si</a></footer>
+  <noscript>Za prikaz simulacije omogočite JavaScript. Enable JavaScript to use the simulation.</noscript>
+</main>
+</body>
+</html>
